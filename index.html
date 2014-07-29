@@ -10,12 +10,10 @@
 	<link rel="stylesheet" href="http://js.arcgis.com/3.7/js/esri/css/esri.css">
 	<link rel="stylesheet" type="text/css" href="css/agsjs.css" />
 	<link rel="stylesheet" type="text/css" href="css/darmc.css" />
-	
 
-	<script>var dojoConfig = { parseOnLoad:true };</script>
 	<script src="http://js.arcgis.com/3.7/"></script>
-	<script src="js/darmcamd.js" type="text/javascript"></script>
 	<script src="js/TOC.js" type="text/javascript"></script>
+  <script src="js/darmc.js" type="text/javascript"></script>
 	
 </head>
 
@@ -52,13 +50,21 @@
   </div>
   <div id="map" data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region:'center'" style="overflow:hidden;">
   	<div id="navToolbar" data-dojo-type="dijit/Toolbar">
-    	<div data-dojo-type="dijit/form/Button" id="zoomin"  data-dojo-props="iconClass:'zoominIcon'"></div>
+        <input type="text" data-dojo-type="dijit/form/TextBox" id="placeName"><div data-dojo-type="dijit/form/Button" id="locateButton"> Find Place</div>
+
+        <div data-dojo-type="dijit/form/Button" id="fullMap" data-dojo-props="iconClass:'fullMap'" onclick="window.open('http://maps.cga.harvard.edu/darmc/index.html')"></div>                
+    	  <div data-dojo-type="dijit/form/Button" id="zoomin"  data-dojo-props="iconClass:'zoominIcon'"></div>
       	<div data-dojo-type="dijit/form/Button" id="zoomout" data-dojo-props="iconClass:'zoomoutIcon'"></div>
       	<div data-dojo-type="dijit/form/Button" id="zoomfullext" data-dojo-props="iconClass:'zoomfullextIcon'"></div>
       	<div data-dojo-type="dijit/form/Button" id="zoomprev" data-dojo-props="iconClass:'zoomprevIcon'"></div>
       	<div data-dojo-type="dijit/form/Button" id="zoomnext" data-dojo-props="iconClass:'zoomnextIcon'"></div>
       	<div data-dojo-type="dijit/form/Button" id="pan" data-dojo-props="iconClass:'panIcon'"></div>
-      
+        <button data-dojo-type="dijit/form/DropDownButton" id="dropdownButton" label="Basemaps"  >
+            <div data-dojo-type="dijit/Menu" id="basemapMenu">
+              <!--The menu items are dynamically created from basemaps-->
+            </div>
+          </button>
+
     </div>
 
   </div>
