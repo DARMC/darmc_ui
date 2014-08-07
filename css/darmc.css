@@ -14,19 +14,19 @@ body {
 
 #header {
     background: #d38b72;
-	background-image: url(images/banner.jpg);
+    background-image: url(images/banner.jpg);
     background-repeat: no-repeat;
     margin: 5px;
     padding-left: 20px;
-	border: solid 1px #ad461d;
+    border: solid 1px #ad461d;
     color: #fff;
     font-size: 22pt;
     text-align: left;
     font-weight: normal;
-	font-style:italic;
+    font-style:italic;
     height: 60px;
-	text-shadow: -1px -1px 0 #ad461d, 1px -1px 0 #ad461d, -1px 1px 0 #ad461d, 1px 1px 0 #ad461d;
-	-moz-border-radius: 0px;
+    text-shadow: -1px -1px 0 #ad461d, 1px -1px 0 #ad461d, -1px 1px 0 #ad461d, 1px 1px 0 #ad461d;
+    -moz-border-radius: 0px;
 }
 
 .strokeme
@@ -45,7 +45,7 @@ body {
     color: #3f3f3f;
     border: solid 2px #ad461d;
     width: 20%;
-	
+    
 }
 
 #leftPane {
@@ -53,17 +53,17 @@ body {
     padding: 0px;
     background-color: white;
     color: #3f3f3f;
-    border: solid 0px #ad461d;
+    border: solid 1px #ad461d;
     width: 18%;
-	-moz-border-radius: 0px;	
+    -moz-border-radius: 0px;    
 }
 
 #map {
     margin: 5px;
-	background-color: gray;
+    background-color: gray;
     border: solid 1px #ad461d;
     -moz-border-radius: 0px;
-	
+    
 }
 
 #footer {
@@ -80,55 +80,55 @@ body {
     padding: 5px;
 }
 #panel {
-	position:absolute;
-	width: 100%; 
-	top:0px;
-	left: 0px;
-	z-index:36;
-	background-color: #ecefe4;
+    position:absolute;
+    width: 100%; 
+    top:0px;
+    left: 0px;
+    z-index:36;
+    background-color: #ecefe4;
 
-}	
+}   
 #navToolbar {
-	position: absolute;
-    width: 100%;	
-	height: 30px;
-	top: 0px;
-	right: 0px;	
-	border-bottom: 1px solid #B5BCC7;
+    position: absolute;
+    width: 100%;    
+    height: 30px;
+    top: 0px;
+    right: 0px;    
+    border-bottom: 1px solid #B5BCC7;
     z-index: 50;
-	/*background-color:transparent;
-	background-position: 0 0;
-	background-repeat: repeat-x;
-	border-bottom: 1px solid #B5BCC7;
-	padding: 2px 0 2px 4px;
-	opacity: 0.2;*/
-	}
-/* PANEL position for the tool bar */	
+    /*background-color:transparent;
+    background-position: 0 0;
+    background-repeat: repeat-x;
+    border-bottom: 1px solid #B5BCC7;
+    padding: 2px 0 2px 4px;
+    opacity: 0.2;*/
+    }
+/* PANEL position for the tool bar */   
 
 
-#toolbarbox {	
-	padding:0px;
-	color:#000;
-	border:0px solid #666;
-	-moz-border-radius:1px;
-	-webkit-border-radius: 1px;
+#toolbarbox {   
+    padding:0px;
+    color:#000;
+    border:0px solid #666;
+    -moz-border-radius:1px;
+    -webkit-border-radius: 1px;
 }
 
-#measurementDiv{color:#000; font-size:12px; line-height:180%;}
+
 
 #thumbPickerDiv{
         background:#fff;
-		color:#fff;
-		border:solid 1px #660000;
+        color:#fff;
+        border:solid 1px #660000;
         -moz-border-radius: 6px;
-        -webkit-border-radius: 6px;		
+        -webkit-border-radius: 6px;     
 }
 #thumbPickerDivTool{
-	position:absolute; right:15px; top:50px; z-Index:99;
-	}
-	
+    position:absolute; right:15px; top:50px; z-Index:99;
+    }
+    
 #legendPane_button_title{
-        color: #000000;		
+        color: #000000;     
 }
 
 #BasemapToggle {
@@ -170,13 +170,13 @@ body {
 .claro .dijitAccordionInnerContainerSelected {
     background-color: #ad461d;
     border-color: #ad461d;
-}	
+}   
 
 .claro .dijitDialogTitleBar {
-	background-color: #ad461d;	
+    background-color: #ad461d;  
 }
 .claro .dijitDialogPaneContent {
-	border-top-color: #ad461d;
+    border-top-color: #ad461d;
 }
 
 
@@ -185,7 +185,7 @@ body {
 }
 
 .claro .dijitContentPane {padding: 0px;}
-	background-color: #ffff00;	
+    background-color: #ffff00;  
 }
 
 
@@ -200,52 +200,7 @@ body {
     background-size: auto auto;
 }
 
-.claro .dijitTooltipContainer {
-    -moz-border-bottom-colors: none;
-    -moz-border-image: none;
-    -moz-border-left-colors: none;
-    -moz-border-right-colors: none;
-    -moz-border-top-colors: none;
-    background-color: #FFFFff;
-    background-image: url("images/tooltipGradient.png");
-    background-position: center bottom;
-    background-repeat: repeat-x;
-    border-bottom-color: #769DC0;
-    border-bottom-left-radius: 4px;
-    border-bottom-right-radius: 4px;
-    border-bottom-style: solid;
-    border-bottom-width: 1px;
-    border-left-color-ltr-source: physical;
-    border-left-color-rtl-source: physical;
-    border-left-color-value: #769DC0;
-    border-left-style-ltr-source: physical;
-    border-left-style-rtl-source: physical;
-    border-left-style-value: solid;
-    border-left-width-ltr-source: physical;
-    border-left-width-rtl-source: physical;
-    border-left-width-value: 1px;
-    border-right-color-ltr-source: physical;
-    border-right-color-rtl-source: physical;
-    border-right-color-value: #769DC0;
-    border-right-style-ltr-source: physical;
-    border-right-style-rtl-source: physical;
-    border-right-style-value: solid;
-    border-right-width-ltr-source: physical;
-    border-right-width-rtl-source: physical;
-    border-top-color: #769DC0;
-    border-top-left-radius: 4px;
-    border-top-right-radius: 4px;
-    border-top-style: solid;
-    border-top-width: 1px;
-    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.25);
-    font-size: 1em;
-    padding-bottom: 6px;
-    padding-left: 4px;
-    padding-right: 8px;
-    padding-top: 1px;
-}
-
-
+.fullMap { background-image:url(images/full_map.png); width:24px; height:24px; }
 .zoominIcon { background-image:url(images/nav_zoomin.png); width:24px; height:24px; }
 .zoomoutIcon { background-image:url(images/nav_zoomout.png); width:24px; height:24px; }
 .zoomfullextIcon { background-image:url(images/nav_fullextent.png); width:24px; height:24px; }
@@ -254,39 +209,39 @@ body {
 .panIcon { background-image:url(images/nav_pan.png); width:24px; height:24px; }
 .distanceIcon { background-image:url(images/distance.png); width:24px; height:24px; }
 .areaIcon { background-image:url(images/area.png); width:24px; height:24px; }
+.printIcon { background-image:url(images/print.png); width:24px; height:24px; }
 
-.identifyIcon {
-  background-image: url(images/i_info.png);  
-  background-repeat: no-repeat;
-  width: 24px;
-  height: 24px;
-  text-align: center;
-}
 
-.fullMap {
-  background-image: url(images/full_map.png);  
-  background-repeat: no-repeat;
-  width: 24px;
-  height: 24px;
-  text-align: center;
-}
+
 
 /* this line hide layers when out of scale for the inline TOC */
 .agsjsTOCOutOfScale {
-	/*  display: none;*/
+    /*  display: none;*/
 }
-
+/*
 .claro .dijitTreeExpando {
     background-image: url("http://js.arcgis.com/3.7/js/dojo/dijit/themes/claro/images/treeExpandImages.png");
     background-position: -35px 2px;
     height: 16px;
     width: 16px;
-}			
-
+}           
+*/
 .agsjsTOCServiceLayerLabel {
     font-size: 10pt;
     padding-left: 3px;
-	
+    
+}
+
+.agsjsTOCServiceLayerPD{
+    background-image: url("images/calcite_sprite_contextmenu.png");
+    background-repeat: no-repeat;   
+    padding-left: 20px; 
+}
+
+.agsjsTOCServiceLayerPDZoom{
+    background-image: url("images/pdzoom.png");
+    background-repeat: no-repeat;   
+    padding-left: 15px; 
 }
 
 .esriSimpleSliderTR {
@@ -295,3 +250,24 @@ body {
 }
 
 .dijitAccordionText{font-size:18px; font-weight:bold;}
+
+#print_button{
+    position: absolute;
+    top: -2px;
+    left:800px;    
+    z-index: 50;
+}
+
+.esriPrintout{    
+    left:800px; 
+    color:#3D5229;    
+    z-index: 50;
+}
+
+#basemap{
+    position: absolute;
+    top: 10px;
+    left:630px;    
+    z-index: 50;
+
+}
