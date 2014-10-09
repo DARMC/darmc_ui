@@ -3,10 +3,10 @@ var map, toc, darmcLayer, identifyTask,identifyParams,identifyListener;
 require(["dojo/parser","dojo/_base/connect","dojo/dom", "dijit/registry", "dojo/on",  "dojo/_base/array", "esri/arcgis/utils", "esri/map","esri/geometry/Extent","esri/toolbars/navigation","esri/layers/ArcGISTiledMapServiceLayer", 
   "esri/layers/ArcGISDynamicMapServiceLayer","agsjs/dijit/TOC","dijit/layout/BorderContainer","dijit/layout/ContentPane", "agsjs/layers/GoogleMapsLayer",
   "esri/dijit/Popup", "esri/tasks/IdentifyTask", "esri/tasks/IdentifyParameters", 'dijit/Dialog',
-  "dijit/Toolbar", "esri/dijit/Print", "esri/tasks/PrintTemplate", "dijit/form/Button", "dijit/Menu", "dojo/domReady!"], 
+  "dijit/Toolbar", "esri/dijit/Print", "esri/tasks/PrintTemplate", "esri/tasks/LegendLayer", "dijit/form/Button", "dijit/Menu", "dojo/domReady!"], 
 
 function(parser, connect, dom, registry, on, arrayUtils, arcgisUtils, Map, Extent, Navigation, ArcGISTiledMapServiceLayer, ArcGISDynamicMapServiceLayer,TOC, BorderContainer,
-    ContentPane, GoogleMapsLayer, Popup, IdentifyTask, IdentifyParameters, Dialog, Toolbar, Print, PrintTemplate){
+    ContentPane, GoogleMapsLayer, Popup, IdentifyTask, IdentifyParameters, Dialog, Toolbar, Print, PrintTemplate, LegendLayer){
 
   // call the parser to create the dijit layout dijits
   parser.parse(); // note djConfig.parseOnLoad = false;
@@ -14,10 +14,11 @@ function(parser, connect, dom, registry, on, arrayUtils, arcgisUtils, Map, Exten
   var navToolbar;
   var dialogMeasure = new Dialog({style: "width: 300px"});
   var popup = new Popup({},dojo.create("div"))
-  var mapurl = "http://cga1.cga.harvard.edu/arcgis/rest/services/darmc/roman/MapServer"
+  var mapurl = "http://cga6.cga.harvard.edu/arcgis/rest/services/darmc/roman/MapServer"
   var geometryService = new esri.tasks.GeometryService("http://sampleserver3.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer");
   var initialExtent = new Extent({"xmin":-1356246,"ymin":2180686,"xmax":5237841,"ymax":7669400,"spatialReference":{"wkid":102100}});
-  var printUrl = "http://sampleserver6.arcgisonline.com/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task";
+  //var printUrl = "http://cga6.cga.harvard.edu/arcgis/rest/services/darmc/darmcprintlegend/GPServer/Export%20Web%20Map";
+  var printUrl = "http://cga6.cga.harvard.edu/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task";
   var currentBasemap = [];
  
   map = new Map("map", {  
@@ -37,7 +38,7 @@ function(parser, connect, dom, registry, on, arrayUtils, arcgisUtils, Map, Exten
   registry.byId("zoomnext").on("click", function () {navToolbar.zoomToNextExtent();});
   registry.byId("pan").on("click", function () {navToolbar.activate(Navigation.PAN);});
   
-  darmcLayer = new ArcGISDynamicMapServiceLayer(mapurl);
+  darmcLayer = new ArcGISDynamicMapServiceLayer(mapurl, {id:"fooLayer"});
   
   var relief = new ArcGISTiledMapServiceLayer("http://services.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer");
   var street = new ArcGISTiledMapServiceLayer("http://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer");
@@ -86,39 +87,6 @@ function(parser, connect, dom, registry, on, arrayUtils, arcgisUtils, Map, Exten
           }
       }
   }
-
-
-  // print
-  var layoutTemplate, templateNames, mapOnlyIndex, templates, printTitle = "DARMC 2.0 ";
-  
-  // create an array of objects that will be used to create print templates
-  var layouts = [{
-    name: "Letter ANSI A Landscape", 
-    label: "Landscape (PDF)", 
-    format: "pdf", 
-    options: { 
-      legendLayers: [], // empty array means no legend
-      scalebarUnit: "Miles",
-      titleText: printTitle + ", Landscape PDF" 
-    }
-  }];
-  
-  // create the print templates
-  var templates = arrayUtils.map(layouts, function(lo) {
-    var t = new PrintTemplate();
-    t.layout = lo.name;
-    t.label = lo.label;
-    t.format = lo.format;
-    t.layoutOptions = lo.options;
-    return t;
-  });  
-
-  var printer = new Print({
-    map: map,
-    templates: templates,
-    url: printUrl
-  }, dom.byId("print_button"));
-  printer.startup();
   
   // DARMC geocoder
   registry.byId("locateButton").on("click", locate);  
@@ -244,11 +212,13 @@ function(parser, connect, dom, registry, on, arrayUtils, arcgisUtils, Map, Exten
     dialogMeasure.set("content", content);
     dialogMeasure.show()
   }
- 
+
+
+  
    
   map.on('layers-add-result', function(evt){
     // overwrite the default visibility of service.TOC will honor the overwritten value.
-    darmcLayer.setVisibleLayers([56,60]);
+    darmcLayer.setVisibleLayers([54,58]);
     //try {
       toc = new TOC({
         map: map,
@@ -265,19 +235,69 @@ function(parser, connect, dom, registry, on, arrayUtils, arcgisUtils, Map, Exten
           console.log('TOC loaded');
         
         });
+        // print
+    var layoutTemplate, templateNames, mapOnlyIndex, templates, printTitle = "DARMC 2.0 ";
+    var legendLayer = new LegendLayer();
+    legendLayer.layerId = "fooLayer"
+    var arrayLegend = [];  
+    var arrayLegendDefault = [0,30,76]  
+    var arrayLegend = arrayLegendDefault.concat(toc.layerInfos[0].layer.visibleLayers);
+    arrayLegend.sort()
+    legendLayer.subLayerIds = arrayLegend;
+    // create an array of objects that will be used to create print templates
+    var layouts = [{
+      name: "Letter ANSI A Landscape", 
+      label: "Landscape (PDF)", 
+      format: "pdf", 
+      options: { 
+        legendLayers: [legendLayer], // empty array means no legend
+        scalebarUnit: "Meters",
+        titleText: printTitle + ", Letter ANSI A Landscape",
+        copyrightText: "CGA",
+        authorText: "Giovanni Zambotti"
+      }
+    }];
+    console.log(layouts)
+    
+    // create the print templates
+    var templates = arrayUtils.map(layouts, function(lo) {
+      var t = new PrintTemplate();
+      t.layout = lo.name;   
+      t.label = lo.label;
+      t.format = lo.format;
+      t.layoutOptions = lo.options;
+      return t;
+    });  
+
+    var printer = new Print({
+      map: map,
+      templates: templates,
+      url: printUrl
+    }, dom.byId("print_button"));
+
+    printer.startup();  
 
     //} catch (e) {  alert(e); }
+    
     });
     map.addLayers([darmcLayer]);
     dojo.connect(map,"onLoad",mapReady);
+    console.log(toc);
+
+    
 
 // end of example actions
 });
 
+
+  
+
+
+
 // identify function
 function mapReady(map){       
-      //identifyTask = new esri.tasks.IdentifyTask("http://cga6.cga.harvard.edu/arcgis/rest/services/darmc/roman/MapServer");
-      identifyTask = new esri.tasks.IdentifyTask("http://cga1.cga.harvard.edu/arcgis/rest/services/darmc/roman/MapServer");
+      identifyTask = new esri.tasks.IdentifyTask("http://cga6.cga.harvard.edu/arcgis/rest/services/darmc/roman/MapServer");
+      //identifyTask = new esri.tasks.IdentifyTask("http://cga1.cga.harvard.edu/arcgis/rest/services/darmc/roman/MapServer");
       identifyParams = new esri.tasks.IdentifyParameters(); 
       identifyListener = dojo.connect(map,"onClick",executeIdentifyTask);       
       dojo.connect(map,"onClick",function (){
@@ -309,149 +329,8 @@ function mapReady(map){
           // I did not enter all the layers because I am not sure it's the best way to hadle it
           // and also it does not really work. From most of the layer I get "No information available."
           console.log(result.layerId);            
-          switch (result.layerId) {
-            // Roman and Medieval Civilization
-            /*case 1: var template = new esri.InfoTemplate("", "Name: ${PLACE_NAME}<br/>Pleiades ID : <i>${PLEIADESID}</i><br/> <a href='${PLEIADESURL}' target='_blank'>Pleiades URL</a>", "");feature.setInfoTemplate(template); break;*/
-            case 2: var template = new esri.InfoTemplate("", "${*}", "");feature.setInfoTemplate(template); break;
-            case 4: var template = new esri.InfoTemplate("", "${*}", "");feature.setInfoTemplate(template); break;
-            case 5: var template = new esri.InfoTemplate("", "${*}", "");feature.setInfoTemplate(template); break;
-            case 6: var template = new esri.InfoTemplate("", "${*}", "");feature.setInfoTemplate(template); break;
-            case 8: var template = new esri.InfoTemplate("", "${*}", "");feature.setInfoTemplate(template); break;
-            case 9: var template = new esri.InfoTemplate("", "${*}", "");feature.setInfoTemplate(template); break;
-            case 10: var template = new esri.InfoTemplate("", "${*}", "");feature.setInfoTemplate(template); break;
-            case 11: var template = new esri.InfoTemplate("", "${*}", "");feature.setInfoTemplate(template); break;
-            
-            case 12: var template = new esri.InfoTemplate("", "${*}", "");feature.setInfoTemplate(template); break;
-            case 14: var template = new esri.InfoTemplate("", "${*}", "");feature.setInfoTemplate(template); break;
-            case 16: var template = new esri.InfoTemplate("", "${*}", "");feature.setInfoTemplate(template); break;
-            case 18: var template = new esri.InfoTemplate("", "${*}", "");feature.setInfoTemplate(template); break;
-            case 19: var template = new esri.InfoTemplate("", "${*}", "");feature.setInfoTemplate(template); break;
-            case 21: var template = new esri.InfoTemplate("", "${*}", "");feature.setInfoTemplate(template); break;
-            case 22: var template = new esri.InfoTemplate("", "${*}", "");feature.setInfoTemplate(template); break;
-            case 24: var template = new esri.InfoTemplate("", "${*}", "");feature.setInfoTemplate(template); break;
-            case 25: var template = new esri.InfoTemplate("", "${*}", "");feature.setInfoTemplate(template); break;             
-            case 26: var template = new esri.InfoTemplate("", "${*}", "");feature.setInfoTemplate(template); break;             
-            case 27: var template = new esri.InfoTemplate("", "${*}", "");feature.setInfoTemplate(template); break;             
-            case 28: var template = new esri.InfoTemplate("", "${*}", "");feature.setInfoTemplate(template); break;
-            case 29: var template = new esri.InfoTemplate("", "${*}", "");feature.setInfoTemplate(template); break;
-            case 30: var template = new esri.InfoTemplate("", "${*}", "");feature.setInfoTemplate(template); break;
-            case 31: var template = new esri.InfoTemplate("", "${*}", "");feature.setInfoTemplate(template); break;
-            // Roman Empire              
-            case 34: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 35: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;          
-            case 36: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 37: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 38: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 39: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 42: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 43: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 44: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 45: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 46: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 47: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 48: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 49: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-
-            case 51: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 52: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 53: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 54: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-                        
-
-            case 56: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 57: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 58: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 59: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 60: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            
-            case 62: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 63: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 64: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 65: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 66: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 67: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 69: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 70: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 71: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 72: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 73: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 75: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 76: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;              
-            case 77: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;              
-            // Medieval Feature
-            case 80: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 81: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 83: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 85: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 86: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            
-
-            case 88: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;              
-            case 89: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;              
-            case 90: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 91: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 92: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 93: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 94: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 96: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 97: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 98: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 99: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            
-            case 101: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;             
-            case 102: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 103: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 104: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 105: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 106: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 107: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;             
-            case 108: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 110: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 111: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            
-            case 113: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 114: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 116: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 117: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 118: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 119: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;           
-            case 120: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 121: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;             
-            case 122: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 123: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;             
-            
-            case 125: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 126: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 128: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 129: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            
-            case 132: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 133: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 135: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 136: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 138: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 139: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 140: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;             
-            case 141: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 142: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;             
-            
-            case 143: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;             
-            case 145: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 146: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 148: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 149: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 151: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 152: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 153: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 156: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 157: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 158: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 160: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 161: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 162: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 164: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;
-            case 165: var template = new esri.InfoTemplate("", "${*}", ""); feature.setInfoTemplate(template); break;             
-          }           
+          var template = new esri.InfoTemplate("", "${*}", "");
+          feature.setInfoTemplate(template);
             
         return feature;         
         });

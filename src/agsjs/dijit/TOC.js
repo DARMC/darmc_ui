@@ -595,7 +595,7 @@ define("agsjs/dijit/TOC",
 
     ioScript.get({
       callbackParamName:"callback", 
-      url:"http://cga1.cga.harvard.edu/arcgis/rest/services/darmc/roman/MapServer/" + this.serviceLayer.id +"?f=pjson",
+      url:"http://cga6.cga.harvard.edu/arcgis/rest/services/darmc/roman/MapServer/" + this.serviceLayer.id +"?f=pjson",
       //on success
       load: function(response, args){
         var layerextent = new esri.geometry.Extent(response.extent);
@@ -615,7 +615,7 @@ define("agsjs/dijit/TOC",
           
     ioScript.get({
       callbackParamName:"callback", 
-      url:"http://cga1.cga.harvard.edu/arcgis/rest/services/darmc/roman/MapServer/" + this.serviceLayer.id +"?f=pjson",
+      url:"http://cga6.cga.harvard.edu/arcgis/rest/services/darmc/roman/MapServer/" + this.serviceLayer.id +"?f=pjson",
       //on success
       load: function(response, args){
         //do what ever you want with response
